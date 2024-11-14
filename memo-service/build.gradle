@@ -1,0 +1,13 @@
+dependencies {
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+tasks.bootJar {
+    enabled = true
+}
+tasks.jar {
+    enabled = false
+}
