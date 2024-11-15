@@ -1,0 +1,28 @@
+###
+GET http://localhost:8080/adoptions/45
+
+
+###
+POST {{BASE_URL}}/adoptions/45
+Content-Type: application/json
+
+{
+  "name": "me"
+}
+
+
+###
+GET {{BASE_URL}}/adoptions/test
+
+###
+GET {{BASE_URL}}/adoptions/chat/2
+
+###
+GET {{BASE_URL}}/adoptions/name/Prancer
+
+
+###
+GET {{BASE_URL}}/adoptions/q?
+    query="do you have cute dog?"
+
+

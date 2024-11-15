@@ -5,3 +5,5 @@ include 'gateway-service'
 
 include 'memo-service'
 include 'baby-service'
+
+include 'ragtest'
