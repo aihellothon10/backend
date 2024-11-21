@@ -1,10 +1,16 @@
 ext {
     set('springModulithVersion', "1.2.4")
+    set('springAiVersion', "1.0.0-M3")
+}
+
+repositories {
+    maven { url 'https://repo.spring.io/milestone' }
 }
 
 dependencyManagement {
     imports {
         mavenBom "org.springframework.modulith:spring-modulith-bom:${springModulithVersion}"
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
     }
 }
 
@@ -26,6 +32,17 @@ dependencies {
     implementation 'io.github.openfeign.querydsl:querydsl-jpa:6.1'
     annotationProcessor 'io.github.openfeign.querydsl:querydsl-apt:6.1:jakarta'
 
+    // ai
+    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+    implementation 'org.springframework.ai:spring-ai-pgvector-store-spring-boot-starter'
+
+    // feign client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-commons'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'org.springframework.modulith:spring-modulith-actuator'
+
     runtimeOnly 'org.postgresql:postgresql'
 
     // swagger
@@ -42,9 +59,11 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
 tasks.bootJar {
     enabled = true
 }
+
 tasks.jar {
     enabled = false
 }

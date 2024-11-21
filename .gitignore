@@ -40,3 +40,5 @@ application.yml
 application-local.yml
 
 script
+client
+http
