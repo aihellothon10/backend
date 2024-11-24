@@ -1,14 +1,14 @@
 package com.example.memoservice.domain.memo;
 
 import com.example.commonmodule.common.exception.DataNotFoundException;
+import com.example.memoservice.domain.analizer.JobQueryService;
+import com.example.memoservice.domain.analizer.model.Job;
 import com.example.memoservice.domain.memo.model.Memo;
 import com.example.memoservice.domain.memo.respository.MemoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +18,7 @@ public class MemoDocumentService {
     private final MemoRepository memoRepository;
     private final VectorStore vectorStore;
 
+    private final JobQueryService jobQueryService;
 
     /**
      * 메모와 함께 Document 생성
@@ -29,26 +30,20 @@ public class MemoDocumentService {
 //        Document document = new Document("title : %s, content : %s".formatted(dto.title(), dto.content()));
 //        vectorStore.add(List.of(document));
 
+        Job job = jobQueryService.getJob(dto.jobId());
+
         Memo newMemo = Memo.builder()
+                .jobId(dto.jobId())
                 .documentId("document.getId()")
-                .title(dto.title())
-                .content(dto.content())
-                .evaluationStatus(dto.evaluationStatus())
-                .targetAudience(dto.targetAudience())
-                .userInput(dto.userInput())
-                .analysisSummary(dto.analysisSummary())
-                .source(dto.source())
+                .targetBabies(dto.targetBabies())
+                .targetAudiences(dto.targetAudiences())
+                .analyzeInput(job.getAnalyzeInput())
+                .analyzeResult(job.getAnalyzeResult())
                 .build();
         Memo savedMemo = memoRepository.save(newMemo);
         return savedMemo.getMemoId();
     }
 
-    public void deleteMemo(Long memoId) {
-        Memo memo = findMemo(memoId);
-
-        vectorStore.delete(List.of(memo.getDocumentId()));
-        memoRepository.delete(memo);
-    }
 
     private Memo findMemo(Long memoId) {
         return memoRepository.findById(memoId)

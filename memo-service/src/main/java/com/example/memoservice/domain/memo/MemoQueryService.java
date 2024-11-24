@@ -4,6 +4,7 @@ import com.example.commonmodule.common.exception.DataNotFoundException;
 import com.example.memoservice.domain.comment.CommentQueryService;
 import com.example.memoservice.domain.comment.model.Comment;
 import com.example.memoservice.domain.memo.model.Memo;
+import com.example.memoservice.domain.memo.respository.MemoListDto;
 import com.example.memoservice.domain.memo.respository.MemoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,12 @@ public class MemoQueryService {
         Page<Comment> comments = commentQueryService.getCommentsByMemoId(memoId, 0, 5);
         Memo memo = findMemo(memoId);
         return MemoDetail.of(memo, comments);
+    }
+
+    public List<MemoListDto> getMemoListByBabies(List<String> targetBabies) {
+//        memoRepository.find
+        return null;
+
     }
 
     public List<Memo> findAllMemos() {

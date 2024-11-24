@@ -1,12 +1,16 @@
 package com.example.memoservice.domain.memo.model;
 
 import com.example.commonmodule.common.entity.BaseEntity;
+import com.example.memoservice.domain.analizer.model.AnalyzeInput;
+import com.example.memoservice.domain.analizer.model.AnalyzeResult;
 import com.mysema.commons.lang.Assert;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,78 +21,66 @@ public class Memo extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memoId;
 
-    /**
-     * Document를 생성하려면
-     */
-    @Column(name = "document_id", nullable = false, unique = true, updatable = false, length = 40)
-    private String documentId;
-
-    /**
-     * 분석 ID
-     */
-    @Column(name = "job_id", nullable = false)
     private Long jobId;
 
-    @Column(name = "title", nullable = false, length = 100)
-    private String title;
+    /**
+     * Document를 생성한다면 id를 지정한다.
+     * // TODO 생성하지 않아도 되게 unique를 false로
+     */
+    @Column(name = "document_id", nullable = false, unique = false, updatable = false, length = 40)
+    private String documentId;
 
-    @Column(name = "content", nullable = false, length = 1000)
-    private String content;
+    @Embedded
+    private AnalyzeInput analyzeInput;
+
+    @Embedded
+    private AnalyzeResult analyzeResult;
+
+    // 메모에 해당하는 아기
+    @ElementCollection
+    @CollectionTable(name = "target_babies", joinColumns = @JoinColumn(name = "memo_id"))
+    private List<String> targetBabies;
+
+    @ElementCollection
+    @CollectionTable(name = "target_members", joinColumns = @JoinColumn(name = "memo_id"))
+    private List<String> targetMembers;
+
+    // 메모를 볼 대상
+//    @Enumerated(EnumType.STRING)
+//    @ElementCollection
+    @ElementCollection
+    @CollectionTable(name = "target_audiences", joinColumns = @JoinColumn(name = "memo_id"))
+    private List<String> targetAudiences;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "evaluation_status", nullable = false, length = 20)
-    private EvaluationStatus evaluationStatus;
+    private MemoStatus memoStatus;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "target_audience", nullable = false, length = 20)
-    private TargetAudience targetAudience;
-
-    /**
-     * 사용자가 입력한 내용(링크, 전문)
-     */
-    @Column
-    private String userInput;
-
-    /**
-     * 입력한 내용을 기반으로 분석한 결과
-     */
-    @Column(name = "analysis_summary", length = 1000)
-    private String analysisSummary;
-
-    @Column(name = "source", nullable = false, length = 200)
-    private String source;
-
-    @Column(name = "hidden", nullable = false)
-    private boolean hidden = false;
 
     @Builder
-    public Memo(String documentId,
-                String title,
-                String content,
-                EvaluationStatus evaluationStatus,
-                TargetAudience targetAudience,
-                String userInput,
-                String analysisSummary,
-                String source) {
+    public Memo(Long jobId,
+                String documentId,
+                AnalyzeInput analyzeInput,
+                AnalyzeResult analyzeResult,
+                List<String> targetBabies,
+                List<String> targetMembers,
+                List<String> targetAudiences) {
         Assert.hasText(documentId, "documentId must not be empty");
-        Assert.hasText(title, "title must not be empty");
-        Assert.hasText(content, "content must not be empty");
-        Assert.notNull(evaluationStatus, "evaluationStatus must not be null");
-        Assert.notNull(targetAudience, "targetAudience must not be null");
-        Assert.hasText(userInput, "userInput must not be null");
-        Assert.hasText(analysisSummary, "analysisSummary must not be null");
-        Assert.hasText(source, "source must not be null");
-
+        this.jobId = jobId;
         this.documentId = documentId;
-        this.title = title;
-        this.content = content;
-        this.evaluationStatus = evaluationStatus;
-        this.targetAudience = targetAudience;
-        this.userInput = userInput;
-        this.analysisSummary = analysisSummary;
-        this.source = source;
-        this.hidden = false;
+        this.analyzeInput = analyzeInput;
+        this.analyzeResult = analyzeResult;
+        this.targetBabies = targetBabies;
+        this.targetMembers = targetMembers;
+        this.targetAudiences = targetAudiences;
+        this.memoStatus = MemoStatus.Normal;
     }
 
+    public void favorite() {
+        this.memoStatus = MemoStatus.Favorite;
+    }
+
+    public void hidden() {
+        this.memoStatus = MemoStatus.Hidden;
+    }
 
 }

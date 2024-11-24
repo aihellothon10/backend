@@ -2,6 +2,7 @@ package com.example.memoservice.domain.analizer.service;
 
 import com.example.memoservice.domain.analizer.TaskCommandService;
 import com.example.memoservice.domain.analizer.TaskQueryService;
+import com.example.memoservice.domain.analizer.model.AnalysisStatus;
 import com.example.memoservice.domain.analizer.model.TaskStatus;
 import com.example.memoservice.domain.analizer.model.TaskType;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.Map;
 
 @Service
@@ -35,9 +35,9 @@ public class AnalyzerFactoryService {
             currentTask.updateStatus(TaskStatus.Completed);
         } catch (Exception e) {
             currentTask.updateStatus(TaskStatus.Failed);
+            currentTask.getJob().updateStatus(AnalysisStatus.Failed);
             e.printStackTrace();
             log.error(e.getMessage());
-            log.error(Arrays.toString(e.getStackTrace()));
         }
 
         return nextTaskId;
@@ -46,9 +46,10 @@ public class AnalyzerFactoryService {
 
     public AnalyzerService getConvertService(TaskType taskType) {
         return switch (taskType) {
-//            case DiffBot -> serviceMap.get("diffBotService");
+            case DiffBot -> serviceMap.get("diffBotService");
             case HelpyV -> serviceMap.get("helpyVService");
             case Perplexity -> serviceMap.get("perPlexityService");
+            case ToxicityPrediction -> serviceMap.get("toxicityPredictionService");
             case NaverSearch -> serviceMap.get("naverSearchService");
             default -> throw new IllegalArgumentException("not supported task type");
         };

@@ -34,11 +34,11 @@ public class Task extends BaseEntity {
 
     @Column(name = "input", nullable = true)
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> input;
+    private Map<String, Object> input = new HashMap<>();
 
     @Column(name = "result", nullable = true)
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> result;
+    private Map<String, Object> result = new HashMap<>();
 
     @Column(name = "request")
     @JdbcTypeCode(SqlTypes.JSON)
@@ -70,20 +70,24 @@ public class Task extends BaseEntity {
 //    }
 
     public void setInput(Map<String, Object> input) {
-        if (this.input != null) {
-            return;
-        }
+//        if (this.input != null) {
+//            return;
+//        }
         this.input = input;
     }
 
     public void setResult(Map<String, Object> result) {
-        if (this.result != null) {
-            return;
-        }
+//        if (this.result != null) {
+//            return;
+//        }
         this.result = result;
     }
 
     public void updateStatus(TaskStatus status) {
+        if (status == TaskStatus.Failed) {
+            this.job.updateStatus(AnalysisStatus.Failed);
+        }
+
         this.status = status;
     }
 

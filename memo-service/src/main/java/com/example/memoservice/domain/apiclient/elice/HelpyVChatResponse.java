@@ -36,16 +36,24 @@ public class HelpyVChatResponse {
     public static class Message {
         private Role role;
         private Content content;
+        private static final ObjectMapper objectMapper = new ObjectMapper(); // 재사용 가능한 ObjectMapper
 
         public Message(@JsonProperty("role") Role role,
                        @JsonProperty("content") String content) {
             this.role = role;
-
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 this.content = objectMapper.readValue(content, Content.class);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to parse content", e);
+            }
+        }
+
+        private Content parseContent(String content) {
+            try {
+                return objectMapper.readValue(content, Content.class); // JSON -> Object 변환
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to parse content: " + content, e);
             }
         }
 
@@ -59,6 +67,7 @@ public class HelpyVChatResponse {
         private int contentContainBoolean;
         private String contentContainBooleanExplain;
         private String answer;
+        private String keyword;
         private List<Book> books;
     }
 

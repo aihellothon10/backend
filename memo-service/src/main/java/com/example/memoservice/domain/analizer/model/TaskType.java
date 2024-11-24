@@ -4,5 +4,6 @@ public enum TaskType {
     DiffBot,
     HelpyV,
     Perplexity,
+    ToxicityPrediction,
     NaverSearch
 }

@@ -1,9 +1,6 @@
 package com.example.memoservice.domain.dashboard.dto;
 
-import com.example.memoservice.domain.analizer.model.Job;
-import com.example.memoservice.domain.analizer.model.Task;
-import com.example.memoservice.domain.analizer.model.TaskStatus;
-import com.example.memoservice.domain.analizer.model.TaskType;
+import com.example.memoservice.domain.analizer.model.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -13,12 +10,13 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class JobResponse {
+public class JobDashboardResponse {
 
     private Long jobId;
 
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
+    private AnalysisStatus status;
 
     private List<TaskDto> tasks;
 
@@ -38,11 +36,12 @@ public class JobResponse {
         }
     }
 
-    public static JobResponse of(Job job) {
-        return new JobResponse(
+    public static JobDashboardResponse of(Job job) {
+        return new JobDashboardResponse(
                 job.getJobId(),
                 job.getCreatedAt(),
                 job.getUpdatedAt(),
+                job.getStatus(),
                 job.getTasks().stream().map(TaskDto::of).toList()
         );
     }
