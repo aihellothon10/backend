@@ -42,3 +42,5 @@ application-local.yml
 script
 client
 http
+docker-compose.yml
+*.sql

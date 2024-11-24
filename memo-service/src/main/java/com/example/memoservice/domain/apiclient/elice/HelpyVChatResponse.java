@@ -27,20 +27,20 @@ public class HelpyVChatResponse {
 
     @Data
     public static class Usage {
-        private Long prompt_tokens;
-        private Long completion_tokens;
-        private Long total_tokens;
+        private Long promptTokens;
+        private Long completionTokens;
+        private Long totalTokens;
     }
 
     @Data
     public static class Message {
         private Role role;
         private Content content;
+        private static final ObjectMapper objectMapper = new ObjectMapper(); // 재사용 가능한 ObjectMapper
 
         public Message(@JsonProperty("role") Role role,
                        @JsonProperty("content") String content) {
             this.role = role;
-
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 this.content = objectMapper.readValue(content, Content.class);
@@ -49,53 +49,33 @@ public class HelpyVChatResponse {
             }
         }
 
+        private Content parseContent(String content) {
+            try {
+                return objectMapper.readValue(content, Content.class); // JSON -> Object 변환
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to parse content: " + content, e);
+            }
+        }
+
 
     }
 
     @Data
     public static class Content {
-        @JsonProperty("question_title")
-        private String question_title;
-
-        @JsonProperty("core_content_summary")
+        private String questionTitle;
         private String coreContentSummary;
-
-        @JsonProperty("content_contain_boolean")
         private int contentContainBoolean;
-
-        @JsonProperty("content_contain_boolean_explain")
         private String contentContainBooleanExplain;
-
-        @JsonProperty("answer")
         private String answer;
-
-        @JsonProperty("books")
+        private String keyword;
         private List<Book> books;
     }
 
     @Data
     public static class Book {
-        //        @JsonProperty("title")
         private String title;
-        //        @JsonProperty("authors")
         private String authors;
-        //        @JsonProperty("year")
         private String year;
-
-//        // 기본 생성자
-//        public Book() {
-//        }
-//
-//        @JsonCreator
-//        public Book(
-//                @JsonProperty("title") String title,
-//                @JsonProperty("authors") String authors,
-//                @JsonProperty("year") String year
-//        ) {
-//            this.title = title;
-//            this.authors = authors;
-//            this.year = year;
-//        }
     }
 
 }

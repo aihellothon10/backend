@@ -39,27 +39,39 @@ public class PerPlexityService implements AnalyzerService {
 
         var inputData = currentTask.getInput();
 
-
         List<PerplexityRequest.Message> messages = new ArrayList<>(systemPrompt);
-        messages.add(createUserPrompt(inputData.get("query").toString()));
+        messages.add(createUserPrompt(inputData.get("answer").toString()));
         PerplexityRequest request = PerplexityRequest.of(
                 messages
         );
         var response = callApi(request);
 
-        taskCommandService.setRequestResponse(currentTask, DataMapper.toMapWithMapper(request), DataMapper.toMapWithMapper(response));
+        taskCommandService.setRequestResponse(
+                currentTask,
+                DataMapper.toMapWithMapper(request),
+                DataMapper.toMapWithMapper(response)
+        );
+
 
         // TODO 임시로 결과 텍스트 전체를 결과로 저장
         Map<String, Object> result = Map.of("answer", response.choices().getFirst().message().content());
         currentTask.setResult(result);
+
+        currentTask.getJob().setPerplexityResult(
+                response.choices().getFirst().message().content(),
+                response.citations()
+        );
+
 
         var nextTask = taskQueryService.getNextTask(currentTask.getJob().getJobId(), currentTaskId);
         if (nextTask == null) {
             return null;
         }
 
-        var nextInput = response.citations();
-        nextTask.setInput(Map.of("query", nextInput));
+        var citations = response.citations();
+        nextTask.setInput(Map.of(
+//                "citations", citations,
+                "keywords", List.of(inputData.get("keyword"))));
         return nextTask.getTaskId();
     }
 

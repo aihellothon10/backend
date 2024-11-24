@@ -2,7 +2,7 @@ package com.example.memoservice.domain.dashboard;
 
 import com.example.memoservice.domain.analizer.JobQueryService;
 import com.example.memoservice.domain.analizer.TaskQueryService;
-import com.example.memoservice.domain.dashboard.dto.JobResponse;
+import com.example.memoservice.domain.dashboard.dto.JobDashboardResponse;
 import com.example.memoservice.domain.dashboard.dto.TaskResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +19,8 @@ class DashboardRestController {
     private final TaskQueryService taskQueryService;
 
     @GetMapping("/jobs/{jobId}")
-    JobResponse getJobs(@PathVariable Long jobId) {
-        return JobResponse.of(jobQueryService.getJob(jobId));
+    JobDashboardResponse getJobs(@PathVariable Long jobId) {
+        return JobDashboardResponse.of(jobQueryService.getJob(jobId));
     }
 
     @GetMapping("/tasks/{taskId}")

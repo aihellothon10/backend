@@ -30,16 +30,18 @@ public class JobEventListener {
     @ApplicationModuleListener
     void jobCreated(JobCreatedEvent event) {
         log.info("jobCreated in JobEventListener [{}]", event);
-        notificationService.notify(1L, new TaskEventListener.NotificationData(event.jobId(), "Job Start"), "Good Job", "job");
+        notificationService.notify(1L, new NotificationData(event.jobId(), "Job Start"), "Good Job", "job");
 
-        jobCommandService.completeJob(event.jobId());
+        jobCommandService.startJob(event.jobId());
     }
 
     @ApplicationModuleListener
     void jobCompleted(JobCompletedEvent event) {
         log.info("jobCompleted in JobEventListener [{}]", event);
-        notificationService.notify(1L, new TaskEventListener.NotificationData(event.jobId(), "Job End"), "Good Job", "job");
 
+        jobCommandService.updateAnalyzeResult(event.jobId());
+
+        notificationService.notify(1L, new NotificationData(event.jobId(), "Job End"), "Good Job", "job");
     }
 
 }

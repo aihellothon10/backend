@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class BabyService {
+public class BabyCommandService {
 
     private final BabyRepository babyRepository;
     private final BabyMeasurementRepository babyMeasurementRepository;
@@ -22,18 +22,27 @@ public class BabyService {
         return babyRepository.save(new Baby(name)).getBabyId();
     }
 
-    public void addMeasurement(Long babyId, double weight, double height) {
+    public void updateBabyMeasurement(Long babyId, double weight, double height) {
+        // check exists
         findBaby(babyId);
+
+//        babyMeasurementRepository.findByBabyId(babyId)
+//                .ifPresentOrElse(
+//                        b
+//                );
 
         BabyMeasurement babyMeasurement = new BabyMeasurement(babyId, weight, height);
         babyMeasurementRepository.save(babyMeasurement);
-
     }
 
     private Baby findBaby(Long babyId) {
         return babyRepository.findById(babyId)
                 .orElseThrow(() -> new DataNotFoundException("Baby Not Found"));
     }
-
+//
+//    private Baby findOrGetBaby(Long babyId) {
+//
+//
+//    }
 
 }

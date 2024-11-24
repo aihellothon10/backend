@@ -32,7 +32,6 @@ public class NaverSearchService implements AnalyzerService {
     public Long analyze(Long currentTaskId) {
         var currentTask = taskQueryService.getTaskByTaskId(currentTaskId);
 
-
         var inputData = currentTask.getInput();
 
         NaverSearchInput input = DataMapper.toObjectWithMapper(inputData, NaverSearchInput.class);
@@ -55,6 +54,10 @@ public class NaverSearchService implements AnalyzerService {
 
         // TODO 임시로 결과 텍스트 전체를 결과로 저장
         currentTask.setResult(Map.of("responses", results));
+        currentTask.getJob().setNaverSearchResult(
+                keywords.getFirst(), results.getFirst()
+
+        );
 
         var nextTask = taskQueryService.getNextTask(currentTask.getJob().getJobId(), currentTaskId);
         if (nextTask == null) {
